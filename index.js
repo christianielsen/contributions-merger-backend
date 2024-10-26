@@ -5,8 +5,17 @@ const app = express();
 const PORT = process.env.PORT || 3002;
 
 app.use(express.json());
+
+const frontendUrls = process.env.FRONTEND_URL.split(",");
+
 const corsOptions = {
-  origin: process.env.FRONTEND_URL,
+  origin: function (origin, callback) {
+    if (!origin || frontendUrls.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   optionsSuccessStatus: 200,
 };
 app.use(cors(corsOptions));
